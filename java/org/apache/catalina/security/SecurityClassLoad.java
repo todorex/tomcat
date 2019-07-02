@@ -35,17 +35,28 @@ public final class SecurityClassLoad {
         if (requireSecurityManager && System.getSecurityManager() == null) {
             return;
         }
-
+        // securityClassLoad方法主要加载Tomcat容器所需的class
+        // Tomcat核心class，即org.apache.catalina.core路径下的class
         loadCorePackage(loader);
+        // Tomcat连接器，即org.apache.coyote路径下的class
         loadCoyotePackage(loader);
+        // Tomcat应用类加载器, org.apache.catalina.loader.WebappClassLoader
         loadLoaderPackage(loader);
+        // org.apache.catalina.realm下的class
         loadRealmPackage(loader);
+        // org.apache.catalina.servlets下的class
         loadServletsPackage(loader);
+        // org.apache.catalina.session下的class；
         loadSessionPackage(loader);
+        // org.apache.catalina.util下的class
         loadUtilPackage(loader);
+        // org.apache.catalina.valves下的class
         loadValvesPackage(loader);
+        // javax.servlet.http.Cookie
         loadJavaxPackage(loader);
+        // org.apache.catalina.connector的class
         loadConnectorPackage(loader);
+        // org.apache.catalina.util路径下的class
         loadTomcatPackage(loader);
     }
 

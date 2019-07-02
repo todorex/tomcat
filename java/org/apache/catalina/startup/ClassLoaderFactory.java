@@ -229,6 +229,7 @@ public final class ClassLoaderFactory {
                     @Override
                     public URLClassLoader run() {
                         if (parent == null)
+                            // commonClassLoader对应的类加载器器
                             return new URLClassLoader(array);
                         else
                             return new URLClassLoader(array, parent);

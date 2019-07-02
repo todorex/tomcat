@@ -388,8 +388,9 @@ public class WebappLoader extends LifecycleMBeanBase
 
         // Construct a class loader based on our current repositories list
         try {
-
+            // 创建WebAppClassLoader
             classLoader = createClassLoader();
+            // 设置其资源路径为当前Webapp下某个context的类资源
             classLoader.setResources(context.getResources());
             classLoader.setDelegate(this.delegate);
 
@@ -503,10 +504,11 @@ public class WebappLoader extends LifecycleMBeanBase
      */
     private WebappClassLoaderBase createClassLoader()
         throws Exception {
-
+        // 通过反射实例化classLoader
+        // 这里是ParallelWebappClassLoader
         Class<?> clazz = Class.forName(loaderClass);
         WebappClassLoaderBase classLoader = null;
-
+        // 这里父类加载器是Catalina实例中的sharedClassLoader
         if (parentClassLoader == null) {
             parentClassLoader = context.getParentClassLoader();
         }

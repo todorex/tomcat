@@ -1220,6 +1220,8 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
             checkStateForClassLoading(name);
 
             // (0) Check our previously loaded local class cache
+            // 检查WebappClassLoader中是否加载过此类
+            // 类中维护了一个resourceEntries的ConcurrentHashMap
             clazz = findLoadedClass0(name);
             if (clazz != null) {
                 if (log.isDebugEnabled())
@@ -1230,6 +1232,7 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
             }
 
             // (0.1) Check our previously loaded class cache
+            // 检查JVM虚拟机中是否加载过该类
             clazz = findLoadedClass(name);
             if (clazz != null) {
                 if (log.isDebugEnabled())
@@ -1242,6 +1245,7 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
             // (0.2) Try loading the class with the system class loader, to prevent
             //       the webapp from overriding Java SE classes. This implements
             //       SRV.10.7.2
+            // 用应用类加载器加载该类（也就是当前JVM的ClassPath），为了防止覆盖基础类实现
             String resourceName = binaryNameToPath(name, false);
 
             ClassLoader javaseLoader = getJavaseClassLoader();
@@ -1301,7 +1305,7 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
                     }
                 }
             }
-
+            // 先判断是否设置了delegate属性，设置为true，那么就会完全按照JVM的"双亲委托"机制流程加载类
             boolean delegateLoad = delegate || filter(name, true);
 
             // (1) Delegate to our parent if requested
@@ -1323,9 +1327,11 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
             }
 
             // (2) Search local repositories
+            // 若是默认的话，是先使用WebappClassLoader自己处理加载类的
             if (log.isDebugEnabled())
                 log.debug("  Searching local repositories");
             try {
+                // 通过自定义findClass定义处理类加载规则
                 clazz = findClass(name);
                 if (clazz != null) {
                     if (log.isDebugEnabled())
@@ -1339,6 +1345,8 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
             }
 
             // (3) Delegate to parent unconditionally
+            // 若是WebappClassLoader在/WEB-INF/classes、/WEB-INF/lib下还是查找不到class
+            // 那么委托给Common类加载器去查找该类 ，这里满足双亲委派原则
             if (!delegateLoad) {
                 if (log.isDebugEnabled())
                     log.debug("  Delegating to parent classloader at end: " + parent);
